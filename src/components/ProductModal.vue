@@ -8,7 +8,7 @@ const emit = defineEmits(["update"]);
 
 const productModalRef = ref();
 let productModal = null;
-const localTempProduct = toRef(props, "tempProduct");
+const productData = toRef(props, "tempProduct");
 
 onMounted(() => {
   productModal = new bootstrap.Modal(productModalRef.value, {
@@ -19,9 +19,9 @@ onMounted(() => {
 
 const updateProduct = async () => {
   try {
-    const [url, http] = checkModalType();
-    const response = await axios[http](url, {
-      data: localTempProduct?.value,
+    const { method, url } = getRequestType();
+    const response = await axios[method](url, {
+      data: productData?.value,
     });
     alert(response.data.message);
     hideModal();
@@ -31,16 +31,15 @@ const updateProduct = async () => {
   }
 };
 
-const checkModalType = () => {
-  const url = `${import.meta.env.VITE_URL}/api/${
-    import.meta.env.VITE_PATH
-  }/admin/product`;
-  return props.isNew
-    ? [url, "post"]
-    : [`${url}/${props.tempProduct.id}`, "put"];
+const getRequestType = () => {
+  const { VITE_URL, VITE_PATH } = import.meta.env;
+  const baseURL = `${VITE_URL}/api/${VITE_PATH}/admin/product`;
+  const url = props.isNew ? baseURL : `${baseURL}/${productData.value.id}`;
+  const method = props.isNew ? "post" : "put";
+  return { method, url };
 };
 
-const createImages = () => (localTempProduct.value.imagesUrl = [""]);
+const initializeProductImages = () => (productData.value.imagesUrl = [""]);
 
 const showModal = () => productModal?.show();
 
@@ -48,9 +47,9 @@ const hideModal = () => productModal?.hide();
 
 defineExpose({
   productModalRef,
-  localTempProduct,
+  productData,
   updateProduct,
-  createImages,
+  initializeProductImages,
   showModal,
   hideModal,
 });
@@ -80,36 +79,28 @@ defineExpose({
         </div>
         <div class="modal-body">
           <div class="row">
-            <div
-              class="col-sm-4"
-              v-if="Array.isArray(localTempProduct?.imagesUrl)"
-            >
-              <div
-                v-for="(image, key) in localTempProduct?.imagesUrl"
-                :key="key"
-              >
+            <div class="col-sm-4" v-if="Array.isArray(productData?.imagesUrl)">
+              <div v-for="(image, key) in productData?.imagesUrl" :key="key">
                 <div class="mb-3">
                   <label for="imageUrl" class="form-label">輸入圖片網址</label>
                   <input
                     type="text"
                     class="form-control"
                     placeholder="請輸入圖片連結"
-                    v-model="localTempProduct.imagesUrl[key]"
+                    v-model="productData.imagesUrl[key]"
                   />
                 </div>
                 <img class="img-fluid mb-2" :src="image" />
               </div>
               <div
                 v-if="
-                  !localTempProduct?.imagesUrl.length ||
-                  localTempProduct?.imagesUrl[
-                    localTempProduct?.imagesUrl.length - 1
-                  ]
+                  productData?.imagesUrl[productData?.imagesUrl.length - 1] !==
+                  ''
                 "
               >
                 <button
                   class="btn btn-outline-primary btn-sm d-block w-100"
-                  @click="localTempProduct?.imagesUrl.push('')"
+                  @click="productData?.imagesUrl.push('')"
                 >
                   新增圖片
                 </button>
@@ -117,7 +108,7 @@ defineExpose({
               <div v-else>
                 <button
                   class="btn btn-outline-danger btn-sm d-block w-100"
-                  @click="localTempProduct?.imagesUrl.pop()"
+                  @click="productData?.imagesUrl.pop()"
                 >
                   刪除圖片
                 </button>
@@ -126,7 +117,7 @@ defineExpose({
             <div v-else>
               <button
                 class="btn btn-outline-primary btn-sm d-block w-100"
-                @click="createImages"
+                @click="initializeProductImages"
               >
                 新增圖片
               </button>
@@ -139,7 +130,7 @@ defineExpose({
                   type="text"
                   class="form-control"
                   placeholder="請輸入標題"
-                  v-model="localTempProduct.title"
+                  v-model="productData.title"
                 />
               </div>
 
@@ -151,7 +142,7 @@ defineExpose({
                     type="text"
                     class="form-control"
                     placeholder="請輸入分類"
-                    v-model="localTempProduct.category"
+                    v-model="productData.category"
                   />
                 </div>
                 <div class="mb-3 col-md-6">
@@ -161,7 +152,7 @@ defineExpose({
                     type="text"
                     class="form-control"
                     placeholder="請輸入單位"
-                    v-model="localTempProduct.unit"
+                    v-model="productData.unit"
                   />
                 </div>
               </div>
@@ -175,7 +166,7 @@ defineExpose({
                     min="0"
                     class="form-control"
                     placeholder="請輸入原價"
-                    v-model="localTempProduct.origin_price"
+                    v-model="productData.origin_price"
                   />
                 </div>
                 <div class="mb-3 col-md-6">
@@ -186,7 +177,7 @@ defineExpose({
                     min="0"
                     class="form-control"
                     placeholder="請輸入售價"
-                    v-model="localTempProduct.price"
+                    v-model="productData.price"
                   />
                 </div>
               </div>
@@ -199,7 +190,7 @@ defineExpose({
                   type="text"
                   class="form-control"
                   placeholder="請輸入產品描述"
-                  v-model="localTempProduct.description"
+                  v-model="productData.description"
                 >
                 </textarea>
               </div>
@@ -210,7 +201,7 @@ defineExpose({
                   type="text"
                   class="form-control"
                   placeholder="請輸入說明內容"
-                  v-model="localTempProduct.content"
+                  v-model="productData.content"
                 >
                 </textarea>
               </div>
@@ -220,7 +211,7 @@ defineExpose({
                     id="is_enabled"
                     class="form-check-input"
                     type="checkbox"
-                    v-model="localTempProduct.is_enabled"
+                    v-model="productData.is_enabled"
                     :true-value="1"
                     :false-value="0"
                   />
@@ -254,7 +245,7 @@ defineExpose({
   setup(props, context) {
     const productModalRef = ref();
     let productModal = null;
-    const localTempProduct = toRef(props, "tempProduct");
+    const productData = toRef(props, "tempProduct");
 
     onMounted(() => {
       productModal = new bootstrap.Modal(productModalRef.value, {
@@ -265,9 +256,9 @@ defineExpose({
 
     const updateProduct = async () => {
       try {
-        const [url, http] = checkModalType();
+        const [url, http] = getRequestType();
         const response = await axios[http](url, {
-          data: localTempProduct?.value,
+          data: productData?.value,
         });
         alert(response.data.message);
         hideModal();
@@ -277,7 +268,7 @@ defineExpose({
       }
     };
 
-    const checkModalType = () => {
+    const getRequestType = () => {
       const url = `${import.meta.env.VITE_URL}/api/${
         import.meta.env.VITE_PATH
       }/admin/product`;
@@ -286,7 +277,7 @@ defineExpose({
         : [`${url}/${props.tempProduct.id}`, "put"];
     };
 
-    const createImages = () => (localTempProduct?.value.imagesUrl = [""]);
+    const initializeProductImages = () => (productData?.value.imagesUrl = [""]);
 
     const showModal = () => productModal?.show();
 
@@ -294,9 +285,9 @@ defineExpose({
 
     return {
       productModalRef,
-      localTempProduct,
+      productData,
       updateProduct,
-      createImages,
+      initializeProductImages,
       showModal,
       hideModal,
     };

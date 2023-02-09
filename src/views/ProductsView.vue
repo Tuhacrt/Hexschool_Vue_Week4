@@ -3,20 +3,20 @@ import { reactive, toRefs, onMounted, ref, computed } from "vue";
 import axios from "axios";
 import router from "../router";
 
-import DelProductModal from "../components/DeleteProductModal.vue";
+import DeleteProductModal from "../components/DeleteProductModal.vue";
 import ProductModal from "../components/ProductModal.vue";
 import PaginationComponent from "../components/PaginationComponent.vue";
 
 export default {
   components: {
-    DelProductModal,
+    DeleteProductModal,
     ProductModal,
     PaginationComponent,
   },
 
   setup() {
     const state = reactive({
-      delProductModalRef: ref(),
+      deleteProductModalRef: ref(),
       productModalRef: ref(),
       paginationComponentRef: ref(),
       products: [],
@@ -27,8 +27,9 @@ export default {
       pagination: {},
     });
 
-    const delProductModalRef = computed(() => state.delProductModalRef);
+    const deleteProductModalRef = computed(() => state.deleteProductModalRef);
     const productModalRef = computed(() => state.productModalRef);
+    const { VITE_URL, VITE_PATH } = import.meta.env;
 
     onMounted(() => {
       getCookie("loginToken");
@@ -43,7 +44,7 @@ export default {
     };
 
     const checkAdmin = async () => {
-      const url = `${import.meta.env.VITE_URL}/api/user/check`;
+      const url = `${VITE_URL}/api/user/check`;
       try {
         await axios.post(url);
         getProductList();
@@ -57,9 +58,7 @@ export default {
       currentPage = state.pagination.current_page || 1
     ) => {
       console.log(`getting update with ${currentPage}`);
-      const url = `${import.meta.env.VITE_URL}/api/${
-        import.meta.env.VITE_PATH
-      }/admin/products/?page=${currentPage}`;
+      const url = `${VITE_URL}/api/${VITE_PATH}/admin/products/?page=${currentPage}`;
       try {
         const response = await axios.get(url);
         state.products = response.data.products;
@@ -83,7 +82,7 @@ export default {
           break;
         case "delete":
           state.tempProduct = { ...currentProduct };
-          delProductModalRef.value?.showModal();
+          deleteProductModalRef.value?.showModal();
           break;
       }
     };
@@ -115,28 +114,26 @@ export default {
           <th width="120">編輯</th>
         </tr>
       </thead>
-      <tbody v-for="product in products" :key="product?.id">
-        <tr>
-          <td>{{ product?.category }}</td>
-          <td>{{ product?.title }}</td>
-          <td class="text-end">{{ product?.origin_price }}</td>
-          <td class="text-end">{{ product?.price }}</td>
+      <tbody v-if="products?.length">
+        <tr v-for="product in products" :key="product.id">
+          <td>{{ product.category }}</td>
+          <td>{{ product.title }}</td>
+          <td class="text-end">{{ product.origin_price }}</td>
+          <td class="text-end">{{ product.price }}</td>
           <td>
-            <span :class="{ 'text-success': product?.is_enabled }">{{
-              product?.is_enabled ? "啟用" : "未啟用"
+            <span :class="{ 'text-success': product.is_enabled }">{{
+              product.is_enabled ? "啟用" : "未啟用"
             }}</span>
           </td>
           <td>
             <div class="btn-group">
               <button
-                type="button"
                 class="btn btn-outline-primary btn-sm"
                 @click="openModal('edit', product)"
               >
                 編輯
               </button>
               <button
-                type="button"
                 class="btn btn-outline-danger btn-sm"
                 @click="openModal('delete', product)"
               >
@@ -156,22 +153,21 @@ export default {
     </div>
   </div>
   <!-- Modal -->
-
   <ProductModal
     :temp-product="tempProduct"
     :is-new="isNew"
     @update="getProductList"
     ref="productModalRef"
   />
-  <DelProductModal
+  <DeleteProductModal
     :temp-product="tempProduct"
     @update="getProductList"
-    ref="delProductModalRef"
+    ref="deleteProductModalRef"
   />
   <!-- Modal -->
 </template>
 
-<!-- const delProductModalRef = ref();
+<!-- const deleteProductModalRef = ref();
     const productModalRef = ref();
     const state = reactive({
       products: [],

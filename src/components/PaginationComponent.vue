@@ -5,12 +5,12 @@ const emit = defineEmits(["changePage"]);
 
 const paginationComponentRef = ref();
 const localPagination = toRef(props, "pagination");
-const totalItems = computed(() => localPagination?.value?.total_pages * 10);
+const totalItems = computed(() => localPagination?.value.total_pages * 10);
 let currentPage = ref(1);
 
 onMounted(() => {});
 
-const onClickHandler = (page) => {
+const onClickPage = (page) => {
   emit("changePage", page);
 };
 
@@ -19,7 +19,7 @@ defineExpose({
   localPagination,
   totalItems,
   currentPage,
-  onClickHandler,
+  onClickPage,
 });
 </script>
 
@@ -29,7 +29,7 @@ defineExpose({
       :total-items="totalItems"
       :item-per-page="10"
       v-model="currentPage"
-      :on-click="onClickHandler"
+      :on-click="onClickPage"
     >
       <template #prev-button>
         <span>
@@ -142,7 +142,7 @@ export default {
 
     onMounted(() => {});
 
-    const onClickHandler = (page) => {
+    const onClickPage = (page) => {
       context.emit("changePage", page);
     };
 
@@ -151,7 +151,7 @@ export default {
       localPagination,
       totalItems,
       currentPage,
-      onClickHandler,
+      onClickPage,
     };
   },
 };

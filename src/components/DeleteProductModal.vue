@@ -6,20 +6,19 @@ import axios from "axios";
 const props = defineProps(["tempProduct"]);
 const emit = defineEmits(["update"]);
 
-const delProductModalRef = ref();
-let delProductModal = null;
+const deleteProductModalRef = ref();
+let deleteProductModal = null;
 
 onMounted(() => {
-  delProductModal = new bootstrap.Modal(delProductModalRef.value, {
+  deleteProductModal = new bootstrap.Modal(deleteProductModalRef.value, {
     keyboard: false,
     backdrop: false,
   });
 });
 
 const deleteProduct = async () => {
-  const url = `${import.meta.env.VITE_URL}/api/${
-    import.meta.env.VITE_PATH
-  }/admin/product/${props.tempProduct.id}`;
+  const { VITE_URL, VITE_PATH } = import.meta.env;
+  const url = `${VITE_URL}/api/${VITE_PATH}/admin/product/${props.tempProduct.id}`;
   try {
     const response = await axios.delete(url);
     alert(response.data.message);
@@ -30,17 +29,17 @@ const deleteProduct = async () => {
   }
 };
 
-const showModal = () => delProductModal?.show();
+const showModal = () => deleteProductModal?.show();
 
-const hideModal = () => delProductModal?.hide();
+const hideModal = () => deleteProductModal?.hide();
 
-defineExpose({ delProductModalRef, deleteProduct, showModal, hideModal });
+defineExpose({ deleteProductModalRef, deleteProduct, showModal, hideModal });
 </script>
 
 <template>
   <div
-    id="delProductModal"
-    ref="delProductModalRef"
+    id="deleteProductModal"
+    ref="deleteProductModalRef"
     class="modal fade"
     tabindex="-1"
     aria-labelledby="delProductModalLabel"
@@ -89,11 +88,11 @@ import axios from "axios";
 export default {
   props: ["tempProduct"],
   setup(props, context) {
-    const delProductModalRef = ref();
-    let delProductModal = null;
+    const deleteProductModalRef = ref();
+    let deleteProductModal = null;
 
     onMounted(() => {
-      delProductModal = new bootstrap.Modal(delProductModalRef.value, {
+      deleteProductModal = new bootstrap.Modal(deleteProductModalRef.value, {
         keyboard: false,
         backdrop: false,
       });
@@ -113,12 +112,12 @@ export default {
       }
     };
 
-    const showModal = () => delProductModal?.show();
+    const showModal = () => deleteProductModal?.show();
 
-    const hideModal = () => delProductModal?.hide();
+    const hideModal = () => deleteProductModal?.hide();
 
     return {
-      delProductModalRef,
+      deleteProductModalRef,
       deleteProduct,
       showModal,
       hideModal,
