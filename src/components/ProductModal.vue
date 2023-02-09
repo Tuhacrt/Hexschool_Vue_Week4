@@ -1,3 +1,61 @@
+<script setup>
+import { ref, onMounted, toRef } from "vue";
+import * as bootstrap from "bootstrap";
+import axios from "axios";
+
+const props = defineProps(["tempProduct", "isNew"]);
+const emit = defineEmits(["update"]);
+
+const productModalRef = ref();
+let productModal = null;
+const localTempProduct = toRef(props, "tempProduct");
+
+onMounted(() => {
+  productModal = new bootstrap.Modal(productModalRef.value, {
+    keyboard: false,
+    backdrop: false,
+  });
+});
+
+const updateProduct = async () => {
+  try {
+    const [url, http] = checkModalType();
+    const response = await axios[http](url, {
+      data: localTempProduct?.value,
+    });
+    alert(response.data.message);
+    hideModal();
+    emit("update");
+  } catch (error) {
+    alert(error.response.data.message);
+  }
+};
+
+const checkModalType = () => {
+  const url = `${import.meta.env.VITE_URL}/api/${
+    import.meta.env.VITE_PATH
+  }/admin/product`;
+  return props.isNew
+    ? [url, "post"]
+    : [`${url}/${props.tempProduct.id}`, "put"];
+};
+
+const createImages = () => (localTempProduct.value.imagesUrl = [""]);
+
+const showModal = () => productModal?.show();
+
+const hideModal = () => productModal?.hide();
+
+defineExpose({
+  productModalRef,
+  localTempProduct,
+  updateProduct,
+  createImages,
+  showModal,
+  hideModal,
+});
+</script>
+
 <template>
   <div
     id="productModal"
@@ -191,12 +249,7 @@
   </div>
 </template>
 
-<script>
-import { ref, onMounted, toRef } from "vue";
-import * as bootstrap from "bootstrap";
-import axios from "axios";
-
-export default {
+<!-- export default {
   props: ["tempProduct", "isNew"],
   setup(props, context) {
     const productModalRef = ref();
@@ -214,7 +267,7 @@ export default {
       try {
         const [url, http] = checkModalType();
         const response = await axios[http](url, {
-          data: localTempProduct.value,
+          data: localTempProduct?.value,
         });
         alert(response.data.message);
         hideModal();
@@ -233,7 +286,7 @@ export default {
         : [`${url}/${props.tempProduct.id}`, "put"];
     };
 
-    const createImages = () => (localTempProduct.value.imagesUrl = [""]);
+    const createImages = () => (localTempProduct?.value.imagesUrl = [""]);
 
     const showModal = () => productModal?.show();
 
@@ -248,5 +301,4 @@ export default {
       hideModal,
     };
   },
-};
-</script>
+}; -->

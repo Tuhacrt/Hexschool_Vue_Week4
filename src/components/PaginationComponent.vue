@@ -1,3 +1,28 @@
+<script setup>
+import { ref, toRef, onMounted, computed } from "vue";
+const props = defineProps(["pagination"]);
+const emit = defineEmits(["changePage"]);
+
+const paginationComponentRef = ref();
+const localPagination = toRef(props, "pagination");
+const totalItems = computed(() => localPagination?.value?.total_pages * 10);
+let currentPage = ref(1);
+
+onMounted(() => {});
+
+const onClickHandler = (page) => {
+  emit("changePage", page);
+};
+
+defineExpose({
+  paginationComponentRef,
+  localPagination,
+  totalItems,
+  currentPage,
+  onClickHandler,
+});
+</script>
+
 <template>
   <div class="pagination-component" ref="paginationComponentRef">
     <vue-awesome-paginate
@@ -36,34 +61,6 @@
     </vue-awesome-paginate>
   </div>
 </template>
-
-<script>
-import { ref, toRef, onMounted, computed } from "vue";
-
-export default {
-  props: ["pagination"],
-  setup(props, context) {
-    const paginationComponentRef = ref();
-    const localPagination = toRef(props, "pagination");
-    const totalItems = computed(() => localPagination.value.total_pages * 10);
-    let currentPage = ref(1);
-
-    onMounted(() => {});
-
-    const onClickHandler = (page) => {
-      context.emit("changePage", page);
-    };
-
-    return {
-      paginationComponentRef,
-      localPagination,
-      totalItems,
-      currentPage,
-      onClickHandler,
-    };
-  },
-};
-</script>
 
 <style>
 .pagination-component .paginate-buttons {
@@ -131,3 +128,31 @@ export default {
   background-color: #e6e6e6;
 }
 </style>
+
+<!-- <script>
+import { ref, toRef, onMounted, computed } from "vue";
+
+export default {
+  props: ["pagination"],
+  setup(props, context) {
+    const paginationComponentRef = ref();
+    const localPagination = toRef(props, "pagination");
+    const totalItems = computed(() => localPagination.value.total_pages * 10);
+    let currentPage = ref(1);
+
+    onMounted(() => {});
+
+    const onClickHandler = (page) => {
+      context.emit("changePage", page);
+    };
+
+    return {
+      paginationComponentRef,
+      localPagination,
+      totalItems,
+      currentPage,
+      onClickHandler,
+    };
+  },
+};
+</script> -->

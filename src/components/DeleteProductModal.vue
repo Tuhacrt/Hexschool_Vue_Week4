@@ -1,3 +1,42 @@
+<script setup>
+import { ref, onMounted } from "vue";
+import * as bootstrap from "bootstrap";
+import axios from "axios";
+
+const props = defineProps(["tempProduct"]);
+const emit = defineEmits(["update"]);
+
+const delProductModalRef = ref();
+let delProductModal = null;
+
+onMounted(() => {
+  delProductModal = new bootstrap.Modal(delProductModalRef.value, {
+    keyboard: false,
+    backdrop: false,
+  });
+});
+
+const deleteProduct = async () => {
+  const url = `${import.meta.env.VITE_URL}/api/${
+    import.meta.env.VITE_PATH
+  }/admin/product/${props.tempProduct.id}`;
+  try {
+    const response = await axios.delete(url);
+    alert(response.data.message);
+    hideModal();
+    emit("update");
+  } catch (error) {
+    alert(error.response.data.message);
+  }
+};
+
+const showModal = () => delProductModal?.show();
+
+const hideModal = () => delProductModal?.hide();
+
+defineExpose({ delProductModalRef, deleteProduct, showModal, hideModal });
+</script>
+
 <template>
   <div
     id="delProductModal"
@@ -42,7 +81,7 @@
   </div>
 </template>
 
-<script>
+<!-- <script>
 import { ref, onMounted } from "vue";
 import * as bootstrap from "bootstrap";
 import axios from "axios";
@@ -86,4 +125,4 @@ export default {
     };
   },
 };
-</script>
+</script> -->
