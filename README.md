@@ -1,36 +1,10 @@
-# vue-week4
-
-This template should help get you started developing with Vue 3 in Vite.
-
-## Recommended IDE Setup
-
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
-
-## Customize configuration
-
-See [Vite Configuration Reference](https://vitejs.dev/config/).
-
-## Project Setup
-
-```sh
-npm install
-```
-
-### Compile and Hot-Reload for Development
-
-```sh
-npm run dev
-```
-
-### Compile and Minify for Production
-
-```sh
-npm run build
-```
-
-### Lint with [ESLint](https://eslint.org/)
-
-```sh
-npm run lint
-```
 # Hexschool_Vue_Week4
+
+Hexschool Vue week4 
+
+
+- [Github pages](https://tuhacrt.github.io/Hexschool_Vue_Week4/)
+- discord ID :Tuhacrt#0008
+- 任務等級：LV.2
+- 使用: Vite, Composition API, [vue-awesome-paginate](https://www.npmjs.com/package/vue-awesome-paginate?ref=madewithvuejs.com)
+
