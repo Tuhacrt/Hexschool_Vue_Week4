@@ -1,3 +1,27 @@
+<script setup>
+import axios from "axios";
+import router from "../router";
+
+const { VITE_URL, VITE_TEXT } = import.meta.env;
+
+const user = {
+  username: "",
+  password: "",
+};
+
+const login = async () => {
+  const url = `${VITE_URL}/admin/signin`;
+  try {
+    const response = await axios.post(url, user);
+    const { token, expired } = response.data;
+    document.cookie = `loginToken=${token}; expires=${new Date(expired)};`;
+    router.push("/products");
+  } catch (error) {
+    alert(error.response.data.message);
+  }
+};
+</script>
+
 <template>
   <div class="container">
     <div class="row justify-content-center">
@@ -34,42 +58,11 @@
       </div>
     </div>
     <p class="mt-5 mb-3 text-muted">&copy; 2023 ~ ∞ - 六角學院</p>
+    <div class="text-center">
+      <p>{{ VITE_TEXT }}</p>
+    </div>
   </div>
 </template>
-
-<script>
-import { reactive, toRefs } from "vue";
-import axios from "axios";
-import router from "../router";
-
-export default {
-  setup() {
-    const state = reactive({
-      user: {
-        username: "",
-        password: "",
-      },
-    });
-
-    const login = async () => {
-      const url = `${import.meta.env.VITE_URL}/admin/signin`;
-      try {
-        const response = await axios.post(url, state.user);
-        const { token, expired } = response.data;
-        document.cookie = `loginToken=${token}; expires=${new Date(expired)};`;
-        router.push("/products");
-      } catch (error) {
-        alert(error.response.data.message);
-      }
-    };
-
-    return {
-      ...toRefs(state),
-      login,
-    };
-  },
-};
-</script>
 
 <style>
 html,
@@ -83,6 +76,7 @@ body {
   align-items: center;
   justify-content: center;
 }
+
 .form-signin {
   width: 100%;
   max-width: 330px;

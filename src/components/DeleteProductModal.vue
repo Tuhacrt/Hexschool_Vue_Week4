@@ -1,10 +1,7 @@
 <script setup>
-import { ref, onMounted } from "vue";
+import { onMounted, ref } from "vue";
 import * as bootstrap from "bootstrap";
 import axios from "axios";
-
-const props = defineProps(["tempProduct"]);
-const emit = defineEmits(["update"]);
 
 const deleteProductModalRef = ref();
 let deleteProductModal = null;
@@ -16,10 +13,13 @@ onMounted(() => {
   });
 });
 
+const props = defineProps(["tempProduct"]);
+const emit = defineEmits(["update"]);
+
 const deleteProduct = async () => {
-  const { VITE_URL, VITE_PATH } = import.meta.env;
-  const url = `${VITE_URL}/api/${VITE_PATH}/admin/product/${props.tempProduct.id}`;
   try {
+    const { VITE_URL, VITE_PATH } = import.meta.env;
+    const url = `${VITE_URL}/api/${VITE_PATH}/admin/product/${props.tempProduct.id}`;
     const response = await axios.delete(url);
     alert(response.data.message);
     hideModal();
@@ -33,7 +33,7 @@ const showModal = () => deleteProductModal?.show();
 
 const hideModal = () => deleteProductModal?.hide();
 
-defineExpose({ deleteProductModalRef, deleteProduct, showModal, hideModal });
+defineExpose({ showModal });
 </script>
 
 <template>
@@ -79,49 +79,3 @@ defineExpose({ deleteProductModalRef, deleteProduct, showModal, hideModal });
     </div>
   </div>
 </template>
-
-<!-- <script>
-import { ref, onMounted } from "vue";
-import * as bootstrap from "bootstrap";
-import axios from "axios";
-
-export default {
-  props: ["tempProduct"],
-  setup(props, context) {
-    const deleteProductModalRef = ref();
-    let deleteProductModal = null;
-
-    onMounted(() => {
-      deleteProductModal = new bootstrap.Modal(deleteProductModalRef.value, {
-        keyboard: false,
-        backdrop: false,
-      });
-    });
-
-    const deleteProduct = async () => {
-      const url = `${import.meta.env.VITE_URL}/api/${
-        import.meta.env.VITE_PATH
-      }/admin/product/${props.tempProduct.id}`;
-      try {
-        const response = await axios.delete(url);
-        alert(response.data.message);
-        hideModal();
-        context.emit("update");
-      } catch (error) {
-        alert(error.response.data.message);
-      }
-    };
-
-    const showModal = () => deleteProductModal?.show();
-
-    const hideModal = () => deleteProductModal?.hide();
-
-    return {
-      deleteProductModalRef,
-      deleteProduct,
-      showModal,
-      hideModal,
-    };
-  },
-};
-</script> -->

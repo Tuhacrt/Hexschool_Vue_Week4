@@ -1,5 +1,5 @@
-<script>
-import { reactive, toRefs, onMounted, ref, computed } from "vue";
+<script setup>
+import { onMounted, ref, reactive } from "vue";
 import axios from "axios";
 import router from "../router";
 
@@ -7,92 +7,73 @@ import DeleteProductModal from "../components/DeleteProductModal.vue";
 import ProductModal from "../components/ProductModal.vue";
 import PaginationComponent from "../components/PaginationComponent.vue";
 
-export default {
-  components: {
-    DeleteProductModal,
-    ProductModal,
-    PaginationComponent,
+const { VITE_URL, VITE_PATH, VITE_TEXT } = import.meta.env;
+
+onMounted(() => {
+  getCookie("loginToken");
+  checkAdmin();
+});
+
+const getCookie = (name) => {
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  const token = parts.length === 2 ? parts.pop().split(";").shift() : "";
+  axios.defaults.headers.common.Authorization = token;
+};
+
+const checkAdmin = async () => {
+  const url = `${VITE_URL}/api/user/check`;
+  try {
+    await axios.post(url);
+    getProductList();
+  } catch (error) {
+    alert(error.response.data.message);
+    router.push("/");
+  }
+};
+
+const state = reactive({
+  products: [],
+  pagination: {},
+  tempProduct: {
+    imagesUrl: [],
   },
+  isNew: false,
+});
 
-  setup() {
-    const state = reactive({
-      deleteProductModalRef: ref(),
-      productModalRef: ref(),
-      paginationComponentRef: ref(),
-      products: [],
-      tempProduct: {
-        imagesUrl: [],
-      },
-      isNew: false,
-      pagination: {},
-    });
+const getProductList = async (
+  currentPage = state.pagination.current_page || 1
+) => {
+  const url = `${VITE_URL}/api/${VITE_PATH}/admin/products/?page=${currentPage}`;
+  try {
+    const response = await axios.get(url);
+    state.products = response.data.products;
+    state.pagination = response.data.pagination;
+  } catch (error) {
+    alert(error.response.data.message);
+  }
+};
 
-    const deleteProductModalRef = computed(() => state.deleteProductModalRef);
-    const productModalRef = computed(() => state.productModalRef);
-    const { VITE_URL, VITE_PATH } = import.meta.env;
+const deleteProductModalRef = ref();
+const productModalRef = ref();
 
-    onMounted(() => {
-      getCookie("loginToken");
-      checkAdmin();
-    });
-
-    const getCookie = (name) => {
-      const value = `; ${document.cookie}`;
-      const parts = value.split(`; ${name}=`);
-      const token = parts.length === 2 ? parts.pop().split(";").shift() : "";
-      axios.defaults.headers.common.Authorization = token;
-    };
-
-    const checkAdmin = async () => {
-      const url = `${VITE_URL}/api/user/check`;
-      try {
-        await axios.post(url);
-        getProductList();
-      } catch (error) {
-        alert(error.response.data.message);
-        router.push("/");
-      }
-    };
-
-    const getProductList = async (
-      currentPage = state.pagination.current_page || 1
-    ) => {
-      console.log(`getting update with ${currentPage}`);
-      const url = `${VITE_URL}/api/${VITE_PATH}/admin/products/?page=${currentPage}`;
-      try {
-        const response = await axios.get(url);
-        state.products = response.data.products;
-        state.pagination = response.data.pagination;
-      } catch (error) {
-        alert(error.response.data.message);
-      }
-    };
-
-    const openModal = (modalType, currentProduct) => {
-      switch (modalType) {
-        case "new":
-          state.tempProduct = { imageUrl: [] };
-          state.isNew = true;
-          productModalRef.value?.showModal();
-          break;
-        case "edit":
-          state.tempProduct = { ...currentProduct };
-          state.isNew = false;
-          productModalRef.value?.showModal();
-          break;
-        case "delete":
-          state.tempProduct = { ...currentProduct };
-          deleteProductModalRef.value?.showModal();
-          break;
-      }
-    };
-
-    return {
-      ...toRefs(state),
-      getProductList,
-      openModal,
-    };
-  },
+const openModal = (modalType, currentProduct) => {
+  switch (modalType) {
+    case "new":
+      state.tempProduct = { imageUrl: [] };
+      state.isNew = true;
+      productModalRef.value?.showModal();
+      break;
+    case "edit":
+      state.tempProduct = { ...currentProduct };
+      state.isNew = false;
+      productModalRef.value?.showModal();
+      break;
+    case "delete":
+      state.tempProduct = { ...currentProduct };
+      deleteProductModalRef.value?.showModal();
+      break;
+  }
 };
 </script>
 
@@ -114,8 +95,8 @@ export default {
           <th width="120">編輯</th>
         </tr>
       </thead>
-      <tbody v-if="products?.length">
-        <tr v-for="product in products" :key="product.id">
+      <tbody v-if="state.products?.length">
+        <tr v-for="product in state.products" :key="product.id">
           <td>{{ product.category }}</td>
           <td>{{ product.title }}</td>
           <td class="text-end">{{ product.origin_price }}</td>
@@ -144,35 +125,30 @@ export default {
         </tr>
       </tbody>
     </table>
+    <!-- Pagination -->
     <div class="d-flex justify-content-center">
       <PaginationComponent
-        :pagination="pagination"
+        :pagination="state.pagination"
         @change-page="getProductList"
         ref="paginationComponentRef"
       />
     </div>
+    <!-- Pagination -->
+    <div class="text-center">
+      <p>{{ VITE_TEXT }}</p>
+    </div>
   </div>
   <!-- Modal -->
   <ProductModal
-    :temp-product="tempProduct"
-    :is-new="isNew"
+    :temp-product="state.tempProduct"
+    :is-new="state.isNew"
     @update="getProductList"
     ref="productModalRef"
   />
   <DeleteProductModal
-    :temp-product="tempProduct"
+    :temp-product="state.tempProduct"
     @update="getProductList"
     ref="deleteProductModalRef"
   />
   <!-- Modal -->
 </template>
-
-<!-- const deleteProductModalRef = ref();
-    const productModalRef = ref();
-    const state = reactive({
-      products: [],
-      tempProduct: {
-        imagesUrl: [],
-      },
-      isNew: false,
-    }); -->

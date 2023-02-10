@@ -1,14 +1,10 @@
 <script setup>
-import { ref, onMounted, toRef } from "vue";
+import { onMounted, ref, toRef } from "vue";
 import * as bootstrap from "bootstrap";
 import axios from "axios";
 
-const props = defineProps(["tempProduct", "isNew"]);
-const emit = defineEmits(["update"]);
-
 const productModalRef = ref();
 let productModal = null;
-const productData = toRef(props, "tempProduct");
 
 onMounted(() => {
   productModal = new bootstrap.Modal(productModalRef.value, {
@@ -16,6 +12,10 @@ onMounted(() => {
     backdrop: false,
   });
 });
+
+const props = defineProps(["tempProduct", "isNew"]);
+const emit = defineEmits(["update"]);
+const productData = toRef(props, "tempProduct");
 
 const updateProduct = async () => {
   try {
@@ -45,14 +45,7 @@ const showModal = () => productModal?.show();
 
 const hideModal = () => productModal?.hide();
 
-defineExpose({
-  productModalRef,
-  productData,
-  updateProduct,
-  initializeProductImages,
-  showModal,
-  hideModal,
-});
+defineExpose({ showModal });
 </script>
 
 <template>
@@ -239,57 +232,3 @@ defineExpose({
     </div>
   </div>
 </template>
-
-<!-- export default {
-  props: ["tempProduct", "isNew"],
-  setup(props, context) {
-    const productModalRef = ref();
-    let productModal = null;
-    const productData = toRef(props, "tempProduct");
-
-    onMounted(() => {
-      productModal = new bootstrap.Modal(productModalRef.value, {
-        keyboard: false,
-        backdrop: false,
-      });
-    });
-
-    const updateProduct = async () => {
-      try {
-        const [url, http] = getRequestType();
-        const response = await axios[http](url, {
-          data: productData?.value,
-        });
-        alert(response.data.message);
-        hideModal();
-        context.emit("update");
-      } catch (error) {
-        alert(error.response.data.message);
-      }
-    };
-
-    const getRequestType = () => {
-      const url = `${import.meta.env.VITE_URL}/api/${
-        import.meta.env.VITE_PATH
-      }/admin/product`;
-      return props.isNew
-        ? [url, "post"]
-        : [`${url}/${props.tempProduct.id}`, "put"];
-    };
-
-    const initializeProductImages = () => (productData?.value.imagesUrl = [""]);
-
-    const showModal = () => productModal?.show();
-
-    const hideModal = () => productModal?.hide();
-
-    return {
-      productModalRef,
-      productData,
-      updateProduct,
-      initializeProductImages,
-      showModal,
-      hideModal,
-    };
-  },
-}; -->

@@ -1,5 +1,5 @@
 <script setup>
-import { ref, toRef, onMounted, computed } from "vue";
+import { ref, toRef, computed } from "vue";
 const props = defineProps(["pagination"]);
 const emit = defineEmits(["changePage"]);
 
@@ -8,19 +8,9 @@ const localPagination = toRef(props, "pagination");
 const totalItems = computed(() => localPagination?.value.total_pages * 10);
 let currentPage = ref(1);
 
-onMounted(() => {});
-
 const onClickPage = (page) => {
   emit("changePage", page);
 };
-
-defineExpose({
-  paginationComponentRef,
-  localPagination,
-  totalItems,
-  currentPage,
-  onClickPage,
-});
 </script>
 
 <template>
@@ -128,31 +118,3 @@ defineExpose({
   background-color: #e6e6e6;
 }
 </style>
-
-<!-- <script>
-import { ref, toRef, onMounted, computed } from "vue";
-
-export default {
-  props: ["pagination"],
-  setup(props, context) {
-    const paginationComponentRef = ref();
-    const localPagination = toRef(props, "pagination");
-    const totalItems = computed(() => localPagination.value.total_pages * 10);
-    let currentPage = ref(1);
-
-    onMounted(() => {});
-
-    const onClickPage = (page) => {
-      context.emit("changePage", page);
-    };
-
-    return {
-      paginationComponentRef,
-      localPagination,
-      totalItems,
-      currentPage,
-      onClickPage,
-    };
-  },
-};
-</script> -->
