@@ -14,6 +14,7 @@ module.exports = {
   plugins: ["prettier"],
   rules: {
     "import/no-extraneous-dependencies": ["error", { devDependencies: true }],
+    "no-alert": "off",
     "prettier/prettier": "error",
     "no-unused-vars": "warn",
     "no-console": "off",
