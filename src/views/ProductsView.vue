@@ -3,20 +3,32 @@ import { onMounted, ref, reactive } from "vue";
 import axios from "axios";
 import router from "../router";
 
-import DeleteProductModal from "../components/DeleteProductModal.vue";
 import ProductModal from "../components/ProductModal.vue";
+import DeleteProductModal from "../components/DeleteProductModal.vue";
 import PaginationComponent from "../components/PaginationComponent.vue";
 
 const { VITE_URL, VITE_PATH, VITE_TEXT } = import.meta.env;
 
+const state = reactive({
+  products: [],
+  pagination: {},
+  tempProduct: {
+    imagesUrl: [],
+  },
+  isNew: false,
+});
+
+const productModalRef = ref();
+const deleteProductModalRef = ref();
+
 onMounted(() => {
-  getCookie("loginToken");
+  setAuthorization("loginToken");
   checkAdmin();
 });
 
-const getCookie = (name) => {
-  const value = `; ${document.cookie}`;
-  const parts = value.split(`; ${name}=`);
+const setAuthorization = (tokenName) => {
+  const cookieValue = `; ${document.cookie}`;
+  const parts = cookieValue.split(`; ${tokenName}=`);
   const token = parts.length === 2 ? parts.pop().split(";").shift() : "";
   axios.defaults.headers.common.Authorization = token;
 };
@@ -32,15 +44,6 @@ const checkAdmin = async () => {
   }
 };
 
-const state = reactive({
-  products: [],
-  pagination: {},
-  tempProduct: {
-    imagesUrl: [],
-  },
-  isNew: false,
-});
-
 const getProductList = async (
   currentPage = state.pagination.current_page || 1
 ) => {
@@ -53,9 +56,6 @@ const getProductList = async (
     alert(error.response.data.message);
   }
 };
-
-const deleteProductModalRef = ref();
-const productModalRef = ref();
 
 const openModal = (modalType, currentProduct) => {
   switch (modalType) {
