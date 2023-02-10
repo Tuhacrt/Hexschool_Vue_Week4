@@ -43,7 +43,9 @@ const updateProduct = async () => {
   }
 };
 
-const initializeProductImages = () => (productData.value.imagesUrl = [""]);
+const initializeProductImages = () => {
+  productData.value.imagesUrl = [""];
+};
 
 defineExpose({ showModal });
 </script>
