@@ -17,6 +17,18 @@ const props = defineProps(["tempProduct", "isNew"]);
 const emit = defineEmits(["update"]);
 const productData = toRef(props, "tempProduct");
 
+const showModal = () => productModal?.show();
+
+const hideModal = () => productModal?.hide();
+
+const getRequestType = () => {
+  const { VITE_URL, VITE_PATH } = import.meta.env;
+  const baseURL = `${VITE_URL}/api/${VITE_PATH}/admin/product`;
+  const url = props.isNew ? baseURL : `${baseURL}/${productData.value.id}`;
+  const method = props.isNew ? "post" : "put";
+  return { method, url };
+};
+
 const updateProduct = async () => {
   try {
     const { method, url } = getRequestType();
@@ -31,19 +43,7 @@ const updateProduct = async () => {
   }
 };
 
-const getRequestType = () => {
-  const { VITE_URL, VITE_PATH } = import.meta.env;
-  const baseURL = `${VITE_URL}/api/${VITE_PATH}/admin/product`;
-  const url = props.isNew ? baseURL : `${baseURL}/${productData.value.id}`;
-  const method = props.isNew ? "post" : "put";
-  return { method, url };
-};
-
 const initializeProductImages = () => (productData.value.imagesUrl = [""]);
-
-const showModal = () => productModal?.show();
-
-const hideModal = () => productModal?.hide();
 
 defineExpose({ showModal });
 </script>

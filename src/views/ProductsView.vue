@@ -21,10 +21,18 @@ const state = reactive({
 const productModalRef = ref();
 const deleteProductModalRef = ref();
 
-onMounted(() => {
-  setAuthorization("loginToken");
-  checkAdmin();
-});
+const getProductList = async (
+  currentPage = state.pagination.current_page || 1
+) => {
+  const url = `${VITE_URL}/api/${VITE_PATH}/admin/products/?page=${currentPage}`;
+  try {
+    const response = await axios.get(url);
+    state.products = response.data.products;
+    state.pagination = response.data.pagination;
+  } catch (error) {
+    alert(error.response.data.message);
+  }
+};
 
 const setAuthorization = (tokenName) => {
   const cookieValue = `; ${document.cookie}`;
@@ -44,18 +52,10 @@ const checkAdmin = async () => {
   }
 };
 
-const getProductList = async (
-  currentPage = state.pagination.current_page || 1
-) => {
-  const url = `${VITE_URL}/api/${VITE_PATH}/admin/products/?page=${currentPage}`;
-  try {
-    const response = await axios.get(url);
-    state.products = response.data.products;
-    state.pagination = response.data.pagination;
-  } catch (error) {
-    alert(error.response.data.message);
-  }
-};
+onMounted(() => {
+  setAuthorization("loginToken");
+  checkAdmin();
+});
 
 const openModal = (modalType, currentProduct) => {
   switch (modalType) {
@@ -72,6 +72,8 @@ const openModal = (modalType, currentProduct) => {
     case "delete":
       state.tempProduct = { ...currentProduct };
       deleteProductModalRef.value?.showModal();
+      break;
+    default:
       break;
   }
 };

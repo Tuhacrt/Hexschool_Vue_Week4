@@ -1,12 +1,13 @@
 <script setup>
 import { ref, toRef, computed } from "vue";
+
 const props = defineProps(["pagination"]);
 const emit = defineEmits(["changePage"]);
 
 const paginationComponentRef = ref();
 const localPagination = toRef(props, "pagination");
-const totalItems = computed(() => localPagination?.value.total_pages * 10);
-let currentPage = ref(1);
+const totalItems = computed(() => localPagination.value.total_pages * 10);
+const currentPage = ref(1);
 
 const onClickPage = (page) => {
   emit("changePage", page);
@@ -71,6 +72,7 @@ const onClickPage = (page) => {
   border-start-start-radius: 25px;
   border-end-start-radius: 25px;
 }
+
 .pagination-component .last-button {
   border-start-end-radius: 25px;
   border-end-end-radius: 25px;
@@ -79,6 +81,7 @@ const onClickPage = (page) => {
 .pagination-component .back-button svg {
   transform: rotate(180deg) translateY(1px);
 }
+
 .pagination-component .next-button svg {
   transform: translateY(-1px);
 }
@@ -113,6 +116,7 @@ const onClickPage = (page) => {
 .pagination-component .active-page:hover {
   background-color: #0d6efd;
 }
+
 .pagination-component .back-button:active,
 .pagination-component .next-button:active {
   background-color: #e6e6e6;

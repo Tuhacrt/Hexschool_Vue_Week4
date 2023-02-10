@@ -16,6 +16,9 @@ onMounted(() => {
 const props = defineProps(["tempProduct"]);
 const emit = defineEmits(["update"]);
 
+const showModal = () => deleteProductModal?.show();
+const hideModal = () => deleteProductModal?.hide();
+
 const deleteProduct = async () => {
   try {
     const { VITE_URL, VITE_PATH } = import.meta.env;
@@ -28,10 +31,6 @@ const deleteProduct = async () => {
     alert(error.response.data.message);
   }
 };
-
-const showModal = () => deleteProductModal?.show();
-
-const hideModal = () => deleteProductModal?.hide();
 
 defineExpose({ showModal });
 </script>
