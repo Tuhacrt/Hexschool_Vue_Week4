@@ -161,7 +161,7 @@ defineExpose({ showModal });
                     min="0"
                     class="form-control"
                     placeholder="請輸入原價"
-                    v-model="productData.origin_price"
+                    v-model.number="productData.origin_price"
                   />
                 </div>
                 <div class="mb-3 col-md-6">
@@ -172,7 +172,7 @@ defineExpose({ showModal });
                     min="0"
                     class="form-control"
                     placeholder="請輸入售價"
-                    v-model="productData.price"
+                    v-model.number="productData.price"
                   />
                 </div>
               </div>
