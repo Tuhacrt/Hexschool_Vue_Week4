@@ -60,7 +60,7 @@ onMounted(() => {
 const openModal = (modalType, currentProduct) => {
   switch (modalType) {
     case "new":
-      state.tempProduct = { imageUrl: [] };
+      state.tempProduct = { imagesUrl: [] };
       state.isNew = true;
       productModalRef.value?.showModal();
       break;
